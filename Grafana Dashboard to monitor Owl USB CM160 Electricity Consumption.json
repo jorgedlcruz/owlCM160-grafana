@@ -101,7 +101,7 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "Watts",
+          "alias": "Watts/h",
           "color": "#e34c84"
         }
       ],
@@ -110,7 +110,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Watts",
+          "alias": "Watts/h",
           "groupBy": [
             {
               "params": [
@@ -141,12 +141,6 @@
               {
                 "params": [],
                 "type": "last"
-              },
-              {
-                "params": [
-                  "perhourWatts"
-                ],
-                "type": "alias"
               }
             ]
           ],
@@ -190,10 +184,11 @@
       },
       "yaxes": [
         {
-          "format": "watt",
-          "label": "Real-time Watts",
+          "decimals": 0,
+          "format": "watth",
+          "label": "Real-time Watts/h",
           "logBase": 1,
-          "max": null,
+          "max": "4500",
           "min": "0",
           "show": true
         },
@@ -203,7 +198,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -214,7 +209,7 @@
     {
       "datasource": "${DS_INFLUXDB}",
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 6,
         "x": 18,
         "y": 0
@@ -238,7 +233,7 @@
                 }
               ]
             },
-            "unit": "watt"
+            "unit": "watth"
           },
           "overrides": [],
           "values": false
@@ -253,7 +248,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "30d"
               ],
               "type": "time"
             },
@@ -279,16 +274,22 @@
               },
               {
                 "params": [],
-                "type": "last"
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " / 60"
+                ],
+                "type": "math"
               }
             ]
           ],
           "tags": []
         }
       ],
-      "timeFrom": null,
+      "timeFrom": "30d",
       "timeShift": null,
-      "title": "Total Consumption",
+      "title": "Last 30 days - Total Consumption",
       "type": "stat"
     },
     {
@@ -297,7 +298,7 @@
         "h": 5,
         "w": 6,
         "x": 18,
-        "y": 4
+        "y": 5
       },
       "id": 10,
       "options": {
@@ -333,7 +334,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "24h"
               ],
               "type": "time"
             },
@@ -363,7 +364,7 @@
               },
               {
                 "params": [
-                  " * 0.00018297/24"
+                  "/60*0.18297+0.26144"
                 ],
                 "type": "math"
               }
@@ -372,9 +373,9 @@
           "tags": []
         }
       ],
-      "timeFrom": null,
+      "timeFrom": "30d",
       "timeShift": null,
-      "title": "Total Cost",
+      "title": "Last 30 days - Total Cost",
       "type": "stat"
     },
     {
@@ -418,12 +419,19 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "Watts per hour",
+          "alias": "Watts/h",
           "color": "rgb(53, 196, 162)"
         },
         {
-          "alias": "Maximum",
-          "color": "rgb(10, 120, 94)"
+          "alias": "Cost",
+          "bars": false,
+          "color": "rgb(255, 255, 255)",
+          "dashes": true,
+          "fill": 0,
+          "lines": true,
+          "pointradius": 5,
+          "points": true,
+          "yaxis": 2
         }
       ],
       "spaceLength": 10,
@@ -431,7 +439,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Watts per hour",
+          "alias": "Watts/h",
           "groupBy": [
             {
               "params": [
@@ -461,20 +469,14 @@
               },
               {
                 "params": [],
-                "type": "sum"
-              },
-              {
-                "params": [
-                  "perhourWatts"
-                ],
-                "type": "alias"
+                "type": "last"
               }
             ]
           ],
           "tags": []
         },
         {
-          "alias": "Maximum",
+          "alias": "Cost",
           "groupBy": [
             {
               "params": [
@@ -504,13 +506,13 @@
               },
               {
                 "params": [],
-                "type": "max"
+                "type": "last"
               },
               {
                 "params": [
-                  "perhourWatts"
+                  "*0.001*0.18297"
                 ],
-                "type": "alias"
+                "type": "math"
               }
             ]
           ],
@@ -523,7 +525,7 @@
       "timeShift": null,
       "title": "Last 24 hours",
       "tooltip": {
-        "shared": true,
+        "shared": false,
         "sort": 0,
         "value_type": "individual"
       },
@@ -537,16 +539,17 @@
       },
       "yaxes": [
         {
-          "format": "watt",
-          "label": null,
+          "format": "watth",
+          "label": "Watts/h",
           "logBase": 1,
           "max": null,
           "min": "0",
           "show": true
         },
         {
+          "decimals": 1,
           "format": "currencyGBP",
-          "label": null,
+          "label": "Cost",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -562,12 +565,13 @@
       "cacheTimeout": null,
       "datasource": "${DS_INFLUXDB}",
       "gridPos": {
-        "h": 6,
-        "w": 3,
+        "h": 5,
+        "w": 6,
         "x": 18,
-        "y": 9
+        "y": 10
       },
       "id": 8,
+      "interval": "",
       "links": [],
       "options": {
         "colorMode": "background",
@@ -600,7 +604,7 @@
                 }
               ]
             },
-            "unit": "watt"
+            "unit": "watth"
           },
           "overrides": [],
           "values": false
@@ -615,7 +619,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "24h"
               ],
               "type": "time"
             },
@@ -641,26 +645,32 @@
               },
               {
                 "params": [],
-                "type": "max"
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " / 60"
+                ],
+                "type": "math"
               }
             ]
           ],
           "tags": []
         }
       ],
-      "timeFrom": null,
+      "timeFrom": "24h",
       "timeShift": null,
-      "title": "Max Consumption",
+      "title": "Last 24-hour - Consumption",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "${DS_INFLUXDB}",
       "gridPos": {
-        "h": 6,
-        "w": 3,
-        "x": 21,
-        "y": 9
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 15
       },
       "id": 9,
       "links": [],
@@ -671,7 +681,6 @@
             "min"
           ],
           "defaults": {
-            "decimals": 2,
             "mappings": [
               {
                 "id": 0,
@@ -691,7 +700,7 @@
                 }
               ]
             },
-            "unit": "watt"
+            "unit": "watth"
           },
           "overrides": [],
           "values": false
@@ -745,13 +754,397 @@
       "type": "stat"
     },
     {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_INFLUXDB}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 0,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "interval": "",
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Watts/h",
+          "color": "#3582c4"
+        },
+        {
+          "alias": "Cost",
+          "bars": false,
+          "color": "rgb(255, 255, 255)",
+          "dashes": true,
+          "lines": true,
+          "pointradius": 5,
+          "points": true,
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Watts/h",
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "owl_grafana",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "watts"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " / 60"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Cost",
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "owl_grafana",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "watts"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "/60*0.18297+0.26144"
+                ],
+                "type": "math"
+              },
+              {
+                "params": [
+                  "Cost"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": "30d",
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Last 30 Days",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "watth",
+          "label": "Watts/h",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "decimals": 1,
+          "format": "currencyGBP",
+          "label": "Cost",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_INFLUXDB}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 9,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "interval": "",
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Watts/h",
+          "color": "#3582c4"
+        },
+        {
+          "alias": "Cost",
+          "bars": false,
+          "color": "rgb(255, 255, 255)",
+          "dashes": true,
+          "fill": 0,
+          "lines": true,
+          "pointradius": 5,
+          "points": true,
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Watts/h",
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "owl_grafana",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "watts"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " / 60"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Cost",
+          "groupBy": [
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "owl_grafana",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "watts"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "/60*0.18297+0.26144"
+                ],
+                "type": "math"
+              },
+              {
+                "params": [
+                  "Cost"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": "7d",
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Last 7 Days",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 0,
+          "format": "watth",
+          "label": "Watts/h",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "decimals": 1,
+          "format": "currencyGBP",
+          "label": "Cost",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "content": "<a href=\"https://www.jorgedelacruz.es\"><img src=\"https://www.jorgedelacruz.es/wp-content/uploads/2019/04/jorgedelacruz-banner_2efede4ef704c939e63a3763231f5961.png\"></a>\n\n\n\n",
       "datasource": "${DS_INFLUXDB}",
       "gridPos": {
         "h": 3,
         "w": 5,
         "x": 19,
-        "y": 15
+        "y": 20
       },
       "id": 12,
       "mode": "html",
@@ -798,378 +1191,6 @@
       "title": "",
       "transparent": true,
       "type": "text"
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_INFLUXDB}",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 9,
-        "x": 0,
-        "y": 17
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "interval": "24h",
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "Watts",
-          "color": "#3582c4"
-        },
-        {
-          "alias": "Cost",
-          "yaxis": 2,
-          "zindex": -1
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "alias": "Watts",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "owl_grafana",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "watts"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              },
-              {
-                "params": [
-                  "perdayWatts"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Cost",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "owl_grafana",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "watts"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              },
-              {
-                "params": [
-                  " * 0.0018297"
-                ],
-                "type": "math"
-              },
-              {
-                "params": [
-                  "perdayWatts"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": "30d",
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Last 30 Days",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "watt",
-          "label": "Watts",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "decimals": 2,
-          "format": "currencyGBP",
-          "label": "Cost",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_INFLUXDB}",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 9,
-        "x": 9,
-        "y": 17
-      },
-      "hiddenSeries": false,
-      "id": 4,
-      "interval": "24h",
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "Watts",
-          "color": "#3582c4"
-        },
-        {
-          "alias": "Cost",
-          "yaxis": 2,
-          "zindex": -1
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "alias": "Watts",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "owl_grafana",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "watts"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              },
-              {
-                "params": [
-                  "perdayWatts"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Cost",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "owl_grafana",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "watts"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              },
-              {
-                "params": [
-                  " * 0.0018297"
-                ],
-                "type": "math"
-              },
-              {
-                "params": [
-                  "perdayWatts"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": "7d",
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Last 7 Days",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "watt",
-          "label": "Watts",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "decimals": 2,
-          "format": "currencyGBP",
-          "label": "Cost",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     }
   ],
   "refresh": "1m",
@@ -1187,5 +1208,5 @@
   "timezone": "",
   "title": "Grafana Dashboard to monitor Owl USB CM160 Electricity Consumption",
   "uid": "KBfuv0eZk",
-  "version": 9
+  "version": 24
 }
